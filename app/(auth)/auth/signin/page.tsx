@@ -13,11 +13,11 @@ export default function SignIn() {
                 </CardHeader>
                 <CardContent>
                     <form className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col">
                             <Label className="text-lg" htmlFor="email">Email or Username</Label>
                             <Input className="text-lg h-12" type="text" placeholder="Enter your email or username" />
                         </div>
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col">
                             <Label className="text-lg" htmlFor="password">Password</Label>
                             <Input className="text-lg h-12" type="password" placeholder="Enter your password" />
                         </div>
