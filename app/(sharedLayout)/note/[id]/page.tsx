@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage, AvatarGroup } from "@/components/ui/avatar"
 import { Card , CardContent , CardDescription , CardHeader , CardTitle, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { User2Icon } from "lucide-react"
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import NoteButtons from "@/components/app/noteButtons";
 interface Props {
     params: Promise<{id: Id<"notes">}>
 }
@@ -24,7 +24,7 @@ export default async function Note({params}: Props) {
         </div>
         )
     }
-    const date = new Date(note._creationTime).toLocaleDateString('en-US',{
+    const creationDate = new Date(note._creationTime).toLocaleDateString('en-US',{
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -32,6 +32,17 @@ export default async function Note({params}: Props) {
                       minute: "numeric",
                       second: "numeric",
                     });
+        let updateDate;
+        if(typeof note.updatedAt === "number"){
+        updateDate = new Date(note.updatedAt).toLocaleDateString('en-US',{
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                          second: "numeric",
+                        });
+        }
     return (
         <div className="flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-2 p-4">
             <AvatarGroup>
@@ -56,18 +67,17 @@ export default async function Note({params}: Props) {
             </AvatarGroup>
             <div className="flex-1 w-full">
                 <Card className="h-full">
-                    <CardHeader>
+                    <CardHeader className="gap-1">
                         <CardTitle className="text-2xl">{note.title}</CardTitle>
-                        <CardDescription className="text-base">Author : {note.author}</CardDescription>
-                        <CardDescription className="text-base" >Created at : {date}</CardDescription>
-                        <CardDescription className="text-base">Last updated at : {note._creationTime}</CardDescription>
+                        {note.author && <CardDescription className="text-sm">Author : {note.author}</CardDescription>}
+                        <CardDescription className="text-sm" >Created at : {creationDate}</CardDescription>
+                        {note.updatedAt && <CardDescription className="text-sm">Last updated at : {updateDate}</CardDescription>}
                     </CardHeader>
-                    <CardContent className="flex-1">
+                    <CardContent className="flex-1 text-lg">
                         {note.content}
                     </CardContent>
                     <CardFooter className="flex items-center justify-end gap-2">
-                        <Button>Edit</Button>
-                        <Button variant="destructive">Delete</Button>
+                        <NoteButtons noteId={note._id}/>
                     </CardFooter>
                 </Card>
             </div>

@@ -5,7 +5,9 @@ export default defineSchema({
   notes: defineTable({
     title: v.string(),
     content: v.string(),
-    author: v.optional(v.string()),
-    updatedAt: v.optional(v.number()),
+    author: v.string(),
+    updatedAt: v.number(),
+  }).searchIndex('search_title',{
+    searchField:'title'
   }),
 });

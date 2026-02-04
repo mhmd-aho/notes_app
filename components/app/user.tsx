@@ -4,8 +4,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { User2Icon } from "lucide-react"
@@ -40,15 +38,12 @@ export function User(){
                 </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    
                     {
                         !isLoading &&(
                             isAuthenticated?
                                 <DropdownMenuItem>
-                                    <Button variant={"ghost"} className="size-full" onClick={onLogout}>Logout</Button>
+                                        <Button variant={"ghost"} className="h-7 w-full text-red-500 font-normal text-start" onClick={onLogout}>Logout</Button>
                                 </DropdownMenuItem>
                                 :
                                 <>

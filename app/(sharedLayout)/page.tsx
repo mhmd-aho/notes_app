@@ -21,7 +21,7 @@ export default async function Home() {
   const auth = await isAuthenticated();
   const notes = await fetchQuery(api.notes.getNotes);
       return (
-        <div className="flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-2 p-4">
+        <div className="relative flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-2 p-4">
               <AddNotes/>
           <div className="flex-1 w-full flex justify-center items-start">
             <Table className="lg:w-3/4 w-full mx-auto">

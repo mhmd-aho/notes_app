@@ -1,14 +1,40 @@
 "use client"
 import { Button } from "@/components/ui/button";
 import {Plus} from "lucide-react"
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { X } from "lucide-react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { NoteSchema } from "@/app/schemas/note";
+import { createNoteAction } from "@/app/actions";
+import { toast } from "sonner";
+import z from "zod";
 export function AddNotes() {
     const [open, setOpen] = useState(false);
+    const [isPending,startTransition] = useTransition()
+    const form = useForm({
+        resolver: zodResolver(NoteSchema),
+        defaultValues:{
+            title:'',
+            content:''
+        }
+    })
+    const onSubmit = (data: z.infer<typeof NoteSchema>) => {
+        startTransition(async () => {
+            try{
+                await createNoteAction(data)
+                toast.success("Note created successfully")
+                setOpen(false)
+            }
+            catch{
+                toast.error("Failed to create note")
+            }
+        })
+    }
     return (
         <>
         <Button onClick={() => setOpen(true)} variant="default" className="self-start max-lg:w-full">
@@ -26,16 +52,30 @@ export function AddNotes() {
                         <CardDescription className="lg:text-lg text-base">Add a new note</CardDescription>
                     </CardHeader>
                     <CardContent className="max-lg:gap-0">
-                        <form className="flex flex-col lg:gap-4 gap-2">
-                            <div className="flex flex-col lg:gap-2 gap-1">
-                                <Label className="max-lg:text-lg text-base" htmlFor="noteName">Note name</Label>
-                                <Input placeholder="Enter note name" className="max-lg:text-lg text-base lg:h-12 h-10" type="text" id="noteName" />
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col lg:gap-4 gap-2">
+                            <Controller
+                            control ={form.control}
+                            name="title"
+                            render={({field,fieldState})=>(
+                                <div className="flex flex-col lg:gap-2 gap-1">
+                                <Label className="max-lg:text-lg text-base" htmlFor="noteName">Note title</Label>
+                                <Input placeholder="Enter note name" className="max-lg:text-lg text-base lg:h-12 h-10" type="text" id="noteName" {...field} />
+                                {fieldState.error && <p className="text-red-500 text-xs">{fieldState.error.message}</p>}
                             </div>
-                            <div className="flex flex-col lg:gap-2 gap-1">
-                                <Label className="max-lg:text-lg text-base" htmlFor="noteContent">Note content</Label>
-                                <Textarea placeholder="Enter note content" className="max-lg:text-lg text-base" id="noteContent" />
-                            </div>
-                            <Button type="submit" className="max-lg:text-lg text-base lg:h-12 h-10">Add Note</Button>
+                            )}
+                            />
+                            <Controller
+                            control ={form.control}
+                            name="content"
+                            render={({field,fieldState})=>(
+                                <div className="flex flex-col lg:gap-2 gap-1">
+                                    <Label className="max-lg:text-lg text-base" htmlFor="noteContent">Note content</Label>
+                                    <Textarea placeholder="Enter note content" className="max-lg:text-lg text-base" id="noteContent" {...field}/>
+                                    {fieldState.error && <p className="text-red-500 text-xs">{fieldState.error.message}</p>}
+                                </div>
+                            )}
+                            />
+                            <Button type="submit" disabled={isPending} className="max-lg:text-lg text-base lg:h-12 h-10">{isPending ? "Adding Note..." : "Add Note"}</Button>
                         </form>
                     </CardContent>
                 </Card>
