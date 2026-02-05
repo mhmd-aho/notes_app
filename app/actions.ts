@@ -5,6 +5,8 @@ import { fetchMutation } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { getToken } from "@/lib/auth-server";
 import { Id } from "@/convex/_generated/dataModel";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 type FormValues = z.infer<typeof NoteSchema>
 export async function createNoteAction(data: FormValues){
@@ -18,6 +20,8 @@ export async function createNoteAction(data: FormValues){
             title: validateData.data.title,
             content: validateData.data.content
         },{token});
+        revalidatePath("/")
+        redirect("/")
     }
     catch{
         return{

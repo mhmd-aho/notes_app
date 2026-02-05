@@ -12,9 +12,11 @@ import Link from "next/link";
 import { useConvexAuth } from "convex/react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 export function User(){
     const {isAuthenticated , isLoading}= useConvexAuth();
+    const user = useQuery(api.auth.getCurrentUser,!isLoading && isAuthenticated? {}: "skip")
     const onLogout = ()=>{
         authClient.signOut({
             fetchOptions:{
@@ -31,7 +33,7 @@ export function User(){
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Avatar>
-                    <AvatarImage src="" />
+                    <AvatarImage src={user? `https://avatar.vercel.sh/${user.email}`: undefined} />
                     <AvatarFallback>
                         <User2Icon/>
                     </AvatarFallback>
@@ -42,15 +44,15 @@ export function User(){
                     {
                         !isLoading &&(
                             isAuthenticated?
-                                <DropdownMenuItem>
-                                        <Button variant={"ghost"} className="h-7 w-full text-red-500 font-normal text-start" onClick={onLogout}>Logout</Button>
+                                <DropdownMenuItem onClick={onLogout} className="text-red-500 font-normal focus:text-red-500">
+                                        Logout
                                 </DropdownMenuItem>
                                 :
                                 <>
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
                                         <Link className="h-full w-full" href='/auth/signin'>Sign in</Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
                                         <Link className="h-full w-full" href='/auth/signup'>Sign up</Link>
                                     </DropdownMenuItem>
                                 </>
