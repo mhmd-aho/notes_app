@@ -6,7 +6,6 @@ import { api } from "@/convex/_generated/api";
 import { getToken } from "@/lib/auth-server";
 import { Id } from "@/convex/_generated/dataModel";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 type FormValues = z.infer<typeof NoteSchema>
 export async function createNoteAction(data: FormValues){
@@ -18,12 +17,14 @@ export async function createNoteAction(data: FormValues){
         }
         await fetchMutation(api.notes.createNote,{
             title: validateData.data.title,
-            content: validateData.data.content
         },{token});
         revalidatePath("/")
-        redirect("/")
     }
-    catch{
+    catch(e){
+        // Check if this is a Next.js redirect error - if so, rethrow it
+        if(e instanceof Error && e.message.includes('NEXT_REDIRECT')){
+            throw e;
+        }
         return{
             error: 'Failed to create note'
         }
@@ -33,11 +34,16 @@ export async function deleteNoteAction(id: string){
     try{
         const token = await getToken()
         await fetchMutation(api.notes.deleteNote,{id:id as Id<"notes">},{token})
-        return{
+        revalidatePath('/')
+        return {
             success: 'Note deleted successfully'
         }
     }
     catch(e){
+        // Check if this is a Next.js redirect error - if so, rethrow it
+        if(e instanceof Error && e.message.includes('NEXT_REDIRECT')){
+            throw e;
+        }
         const message = e instanceof Error ? e.message : 'Failed to delete note'
         if(message.includes('You are not the creator')){
             return{

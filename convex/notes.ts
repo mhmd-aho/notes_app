@@ -2,6 +2,7 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { authComponent } from "./auth";
 import { Doc, Id } from "./_generated/dataModel";
+
 export const getNotes = query({
   args: {},
   handler: async (ctx) => {
@@ -17,7 +18,6 @@ export const getNoteById = query({
 export const createNote = mutation({
   args:{
     title:v.string(),
-    content:v.string(),
   },
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
@@ -26,9 +26,13 @@ export const createNote = mutation({
     }
     const newNote = await ctx.db.insert("notes",{
       title: args.title,
-      content: args.content,
       author: user.name,
       updatedAt: Date.now(),
+      content: {
+        type: "doc",
+        content: [],
+      },
+      
     })
     return newNote
   }
@@ -72,3 +76,15 @@ export const searchNotes = query({
     return result
   }
 })
+
+// Update the timestamp when a note is edited
+export const updateNoteTimestamp = mutation({
+  args: {
+    id: v.id("notes"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, {
+      updatedAt: Date.now(),
+    });
+  },
+});

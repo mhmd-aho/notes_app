@@ -4,20 +4,21 @@ import { useTransition } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { NoteSchema } from "@/app/schemas/note";
 import { createNoteAction } from "@/app/actions";
 import { toast } from "sonner";
 import z from "zod";
+import { useRouter } from "next/navigation";
 export default function CreateNote() {
+    const token = au
+    const router = useRouter()
         const [isPending,startTransition] = useTransition()
         const form = useForm({
             resolver: zodResolver(NoteSchema),
             defaultValues:{
                 title:'',
-                content:''
             }
         })
         const onSubmit = (data: z.infer<typeof NoteSchema>) => {
@@ -25,6 +26,7 @@ export default function CreateNote() {
                 try{
                     await createNoteAction(data)
                     toast.success("Note created successfully")
+                    router.push("/")
                 }
                 catch{
                     toast.error("Failed to create note")
@@ -47,17 +49,6 @@ export default function CreateNote() {
                                 <div className="flex flex-col lg:gap-2 gap-1">
                                     <Label className="max-lg:text-lg text-base" htmlFor="noteName">Note title</Label>
                                     <Input placeholder="Enter note name" className="max-lg:text-lg text-base lg:h-12 h-10" type="text" id="noteName" {...field} />
-                                    {fieldState.error && <p className="text-red-500 text-xs">{fieldState.error.message}</p>}
-                                </div>
-                            )}
-                            />
-                            <Controller
-                            control ={form.control}
-                            name="content"
-                            render={({field,fieldState})=>(
-                                <div className="flex flex-col lg:gap-2 gap-1">
-                                    <Label className="max-lg:text-lg text-base" htmlFor="noteContent">Note content</Label>
-                                    <Textarea placeholder="Enter note content" className="max-lg:text-lg text-base" id="noteContent" {...field}/>
                                     {fieldState.error && <p className="text-red-500 text-xs">{fieldState.error.message}</p>}
                                 </div>
                             )}

@@ -1,12 +1,13 @@
 
-import { Card , CardContent , CardDescription , CardHeader , CardTitle, CardFooter } from "@/components/ui/card"
+import { Card , CardContent , CardDescription , CardFooter, CardHeader , CardTitle} from "@/components/ui/card"
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import NoteButtons from "@/components/app/noteButtons";
 import { Presence } from "@/components/app/presence";
 import { getToken } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
+import { CollaborativeEditor } from "@/components/app/collaborativeEditor";
+import { DeleteButton } from "@/components/app/deleteButton";
 interface Props {
     params: Promise<{id: Id<"notes">}>
 }
@@ -50,6 +51,7 @@ export default async function Note({params}: Props) {
                           second: "numeric",
                         });
         }
+       
     return (
         <div className="flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-2 p-4">
                 {userId && <Presence noteId={note._id} userId={userId}/>}
@@ -62,10 +64,10 @@ export default async function Note({params}: Props) {
                         {note.updatedAt && <CardDescription className="text-sm">Last updated at : {updateDate}</CardDescription>}
                     </CardHeader>
                     <CardContent className="flex-1 text-lg">
-                        {note.content}
+                        <CollaborativeEditor  documentId={note._id}/>
                     </CardContent>
-                    <CardFooter className="flex items-center justify-end gap-2">
-                        <NoteButtons noteId={note._id}/>
+                    <CardFooter>
+                        <DeleteButton id={note._id}/>
                     </CardFooter>
                 </Card>
             </div>

@@ -15,6 +15,7 @@ import { fetchQuery } from "convex/nextjs";
 import { Button } from "@/components/ui/button";
 export default async function Home() {
   const notes = await fetchQuery(api.notes.getNotes);
+  
       return (
         <div className="relative flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-2 p-4">
               <Link className="self-start" href="/create-note">

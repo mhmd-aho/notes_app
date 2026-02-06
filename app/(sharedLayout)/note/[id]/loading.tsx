@@ -2,7 +2,7 @@ import { AvatarGroup } from "@/components/ui/avatar";
 import { Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function Loading(){
+export default async function Loading(){
     return(
         <div className="flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-2 p-4">
             <AvatarGroup>
