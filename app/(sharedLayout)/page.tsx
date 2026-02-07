@@ -13,9 +13,9 @@ import Link from "next/link";
 import { Edit } from "lucide-react";
 import { fetchQuery } from "convex/nextjs";
 import { Button } from "@/components/ui/button";
+import { timeAgo } from "@/lib/time";
 export default async function Home() {
   const notes = await fetchQuery(api.notes.getNotes);
-  
       return (
         <div className="relative flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-2 p-4">
               <Link className="self-start" href="/create-note">
@@ -42,14 +42,7 @@ export default async function Home() {
                           month: "numeric",
                           day: "numeric",
                         }).replace(/\//g,"-");
-                        const lastUpdate = new Date(note.updatedAt).toLocaleDateString('en-US',{
-                          year: "numeric",
-                          month: "numeric",
-                          day: "numeric",
-                          hour: "numeric",
-                          minute: "numeric",
-                          second: "numeric",
-                        }).replace(/\//g,"-");
+                        const lastUpdate = timeAgo(note.updatedAt);
                         return(
                           <TableRow key={note._id}>
                           <TableCell className="flex items-center gap-2">

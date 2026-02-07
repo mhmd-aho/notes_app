@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📝 Collaborative Notes App
 
-## Getting Started
+A modern, real-time collaborative note-taking application built with **Next.js**, **Convex**, and **Better Auth**.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Live Demo
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[View Live Demo](https://notes-app.example.com) _(Replace with your deployment URL)_
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Features
 
-## Learn More
+- **Real-time Collaboration**: Edit notes simultaneously with other users using a powerful rich-text editor.
+- **Live Presence**: See who's currently viewing or editing a note with built-in presence indicators.
+- **Rich Text Editing**: Full-featured editing experience powered by **BlockNote**.
+- **Instant Sync**: Blazing fast data synchronization across all clients via **Convex**.
+- **Secure Authentication**: Robust user management and authentication using **Better Auth**.
+- **Search & Organize**: Find your notes quickly with integrated search indexing.
+- **Responsive Design**: Beautiful, mobile-friendly interface built with **Tailwind CSS** and **Radix UI**.
+- **Smart Timestamps**: Relative time-ago indicators for note updates.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Framework**: [Next.js 15+](https://nextjs.org/) (App Router)
+- **Backend/Database**: [Convex](https://www.convex.dev/) (Real-time Backend as a Service)
+- **Authentication**: [Better Auth](https://www.better-auth.com/)
+- **Editor**: [BlockNote](https://www.blocknotejs.org/) / [ProseMirror Sync](https://convex.dev/components/prosemirror-sync)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [Shadcn/UI](https://ui.shadcn.com/) (Radix UI)
+- **Validation**: [Zod](https://zod.dev/) & [React Hook Form](https://react-hook-form.com/)
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📂 Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/app`: Next.js App Router pages and layouts.
+- `/convex`: Convex backend schema, queries, mutations, and actions.
+- `/components`: Reusable UI components (Shared & Feature-specific).
+- `/lib`: Utility functions and auth configuration.
+- `/public`: Static assets.
+
+---
+
+> [!NOTE]
+> This project is designed for high-performance real-time interactions, leveraging Convex's reactive database for a seamless user experience.

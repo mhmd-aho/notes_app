@@ -12,6 +12,7 @@ import { authClient } from '@/lib/auth-client'
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 export default function SignUp() {
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
@@ -98,7 +99,7 @@ export default function SignUp() {
                             )}
                             />
                         <Button type="submit" className="text-lg h-12" disabled={isPending}>
-                            {isPending ? "Signing Up..." : "Sign Up"}
+                            {isPending ? <span className="flex items-center gap-1">Signing Up <Spinner className="size-5"/></span> : "Sign Up"}
                         </Button>
                     </form>
                 </CardContent>

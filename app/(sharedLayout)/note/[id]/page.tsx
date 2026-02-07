@@ -8,6 +8,7 @@ import { getToken } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
 import { CollaborativeEditor } from "@/components/app/collaborativeEditor";
 import { DeleteButton } from "@/components/app/deleteButton";
+import { timeAgo } from "@/lib/time";
 interface Props {
     params: Promise<{id: Id<"notes">}>
 }
@@ -17,7 +18,7 @@ export default async function Note({params}: Props) {
     const note = await fetchQuery(api.notes.getNoteById, {id});
     const userId = await fetchQuery(api.presence.getUserId, {},{token})
     if(!userId){
-        return redirect("/auth/signin")
+        return redirect("/auth/signup")
     }
     if(!note){
         return(
@@ -42,14 +43,7 @@ export default async function Note({params}: Props) {
                     });
         let updateDate;
         if(typeof note.updatedAt === "number"){
-        updateDate = new Date(note.updatedAt).toLocaleDateString('en-US',{
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "numeric",
-                          minute: "numeric",
-                          second: "numeric",
-                        });
+        updateDate = timeAgo(note.updatedAt)
         }
        
     return (
@@ -66,7 +60,7 @@ export default async function Note({params}: Props) {
                     <CardContent className="flex-1 text-lg">
                         <CollaborativeEditor  documentId={note._id}/>
                     </CardContent>
-                    <CardFooter>
+                    <CardFooter className="flex justify-end">
                         <DeleteButton id={note._id}/>
                     </CardFooter>
                 </Card>

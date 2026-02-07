@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import z from "zod";
 import { useRouter } from "next/navigation";
 import { useConvexAuth } from "convex/react";
+import { Spinner } from "@/components/ui/spinner";
 export default function CreateNote() {
    const {isAuthenticated , isLoading}= useConvexAuth();
    const router = useRouter();
@@ -25,7 +26,7 @@ export default function CreateNote() {
    
    useEffect(()=>{
        if(!isLoading && !isAuthenticated){
-        router.push("/auth/signin")
+        router.push("/auth/signup")
        }
    },[isLoading, isAuthenticated, router]);
    const onSubmit = (data: z.infer<typeof NoteSchema>) => {
@@ -75,7 +76,7 @@ export default function CreateNote() {
                                 </div>
                             )}
                             />
-                            <Button type="submit" disabled={isPending} className="max-lg:text-lg text-base lg:h-12 h-10">{isPending ? "Adding Note..." : "Add Note"}</Button>
+                            <Button type="submit" disabled={isPending} className="max-lg:text-lg text-base lg:h-12 h-10">{isPending ? <span className="flex items-center gap-1">Adding Note <Spinner className="size-5"/></span>: "Add Note"}</Button>
                         </form>
                         </CardContent>
                     </Card>
