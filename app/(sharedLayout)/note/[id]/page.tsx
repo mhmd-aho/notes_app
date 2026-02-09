@@ -5,33 +5,36 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Presence } from "@/components/app/presence";
 import { getToken } from "@/lib/auth-server";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 import { CollaborativeEditor } from "@/components/app/collaborativeEditor";
 import { DeleteButton } from "@/components/app/deleteButton";
 import { timeAgo } from "@/lib/time";
 interface Props {
     params: Promise<{id: Id<"notes">}>
 }
+export async function generateMetadata({params}: {params: {id: Id<"notes">}}) {
+    const {id} = await params
+    const note = await fetchQuery(api.notes.getNoteById, {id})
+    if (!note) {
+        return {
+            title: 'Note not found',
+        }
+    }
+    return {
+        title: `${note.title} | Notes app`,
+        description: `Note: ${note.title}`,
+    }
+}
 export default async function Note({params}: Props) {
     const {id} = await params;
     const token = await getToken()
     const note = await fetchQuery(api.notes.getNoteById, {id});
+    if(!note){
+        return notFound();
+    }
     const userId = await fetchQuery(api.presence.getUserId, {},{token})
     if(!userId){
         return redirect("/auth/signup")
-    }
-    if(!note){
-        return(
-            <div className="flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-2 p-4">
-            <div className="flex-1 w-full">
-                <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle className="text-2xl">Note not found</CardTitle>
-                    </CardHeader>
-                </Card>
-            </div>
-        </div>
-        )
     }
     const creationDate = new Date(note._creationTime).toLocaleDateString('en-US',{
                       year: "numeric",
