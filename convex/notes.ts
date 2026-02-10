@@ -27,6 +27,7 @@ export const createNote = mutation({
     const newNote = await ctx.db.insert("notes",{
       title: args.title,
       author: user.name,
+      authorId: user._id,
       updatedAt: Date.now(),
       content: {
         type: "doc",
@@ -43,10 +44,10 @@ export const deleteNote = mutation({
   },
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
-    const note = await ctx.db.get(args.id)
     if(!user){
       throw new Error('Unauthorized')
     }
+    const note = await ctx.db.get(args.id)
     if (note?.author !== user.name) {
       throw new Error('You are not the creator of this note to delete it')
     }

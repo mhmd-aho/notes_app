@@ -9,6 +9,7 @@ export default defineSchema({
       content: v.array(v.any()),
     }),
     author: v.string(),
+    authorId: v.string(),
     updatedAt: v.number(),
   }).searchIndex('search_title',{
     searchField:'title'

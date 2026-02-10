@@ -19,12 +19,11 @@ export async function createNoteAction(data: FormValues){
             title: validateData.data.title,
         },{token});
         revalidatePath("/")
-    }
-    catch(e){
-        // Check if this is a Next.js redirect error - if so, rethrow it
-        if(e instanceof Error && e.message.includes('NEXT_REDIRECT')){
-            throw e;
+        return{
+            success: 'Note created successfully'
         }
+    }
+    catch{
         return{
             error: 'Failed to create note'
         }
@@ -40,10 +39,6 @@ export async function deleteNoteAction(id: string){
         }
     }
     catch(e){
-        // Check if this is a Next.js redirect error - if so, rethrow it
-        if(e instanceof Error && e.message.includes('NEXT_REDIRECT')){
-            throw e;
-        }
         const message = e instanceof Error ? e.message : 'Failed to delete note'
         if(message.includes('You are not the creator')){
             return{

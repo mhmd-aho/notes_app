@@ -35,7 +35,7 @@ export default async function Home() {
               </TableHeader>
               <TableBody>
                 {
-                      notes?
+                      notes && notes.length > 0 ?
                       notes.map((note) =>{
                         const date = new Date(note._creationTime).toLocaleDateString('en-US',{
                           year: "numeric",
@@ -60,7 +60,7 @@ export default async function Home() {
                       }):
                       <TableRow>
                         <TableCell colSpan={3} className="text-center">
-                          No notes found
+                          <h1 className="text-2xl font-bold">No notes found</h1>
                         </TableCell>
                       </TableRow>
                 }

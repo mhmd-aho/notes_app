@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Notes app",
   description: "this app is for collaborative note taking",
-  authors: [{name: "mohamed"}],
+  authors: [{name: "mohamad abou hamoud"}],
   keywords: ["notes", "collaborative notes", "note taking", "realtime notes"],
   icons:{
     icon:'/favicon.png',

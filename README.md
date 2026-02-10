@@ -6,7 +6,7 @@ A modern, real-time collaborative note-taking application built with **Next.js**
 
 ## 🚀 Live Demo
 
-[View Live Demo](https://notes-app.example.com) _(Replace with your deployment URL)_
+[View Live Demo](https://notes-app-dun-eight.vercel.app/)
 
 ---
 
@@ -25,7 +25,7 @@ A modern, real-time collaborative note-taking application built with **Next.js**
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 15+](https://nextjs.org/) (App Router)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 - **Backend/Database**: [Convex](https://www.convex.dev/) (Real-time Backend as a Service)
 - **Authentication**: [Better Auth](https://www.better-auth.com/)
 - **Editor**: [BlockNote](https://www.blocknotejs.org/) / [ProseMirror Sync](https://convex.dev/components/prosemirror-sync)
