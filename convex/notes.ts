@@ -4,11 +4,13 @@ import { authComponent } from "./auth";
 import { Doc, Id } from "./_generated/dataModel";
 
 export const getNotes = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("notes").collect();
+  args: {teamid: v.id('teams')},
+  handler: async (ctx,args) => {
+      return await ctx.db.query("notes").withIndex("by_team", (q) => q.eq("team", args.teamid)).collect();
+
   },
 });
+
 export const getNoteById = query({
   args: {id: v.id("notes")},
   handler: async (ctx,args) => {
@@ -18,6 +20,7 @@ export const getNoteById = query({
 export const createNote = mutation({
   args:{
     title:v.string(),
+    team:v.id('teams'),
   },
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
@@ -26,8 +29,9 @@ export const createNote = mutation({
     }
     const newNote = await ctx.db.insert("notes",{
       title: args.title,
-      author: user.name,
+      author: user.username || user.name,
       authorId: user._id,
+      team:args.team,
       updatedAt: Date.now(),
       content: {
         type: "doc",
@@ -48,10 +52,15 @@ export const deleteNote = mutation({
       throw new Error('Unauthorized')
     }
     const note = await ctx.db.get(args.id)
-    if (note?.author !== user.name) {
-      throw new Error('You are not the creator of this note to delete it')
+    if(!note){
+      throw new Error('Note not found')
     }
-    await ctx.db.delete(args.id)
+    const team = await ctx.db.get(note.team)
+    if (note.author === user.name || team?.ownerId === user._id) {
+      await ctx.db.delete(args.id)
+    }else{
+      throw new Error('You are not the creator of this note or owner of the team to delete it')
+    }
   }
 })
 interface SearchNoteResult{

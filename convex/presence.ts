@@ -37,7 +37,7 @@ export const list = query({
             return {
                 ...entry,
                 name: user.name,
-                image: `https://avatar.vercel.sh/${user.username}`
+                image: `https://avatar.vercel.sh/${user.email}`
             }
         })
     )

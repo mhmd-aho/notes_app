@@ -1,22 +1,15 @@
 "use client"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { User2Icon } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import Link from "next/link";
-import { useConvexAuth } from "convex/react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-export function User(){
-    const {isAuthenticated , isLoading}= useConvexAuth();
-    const user = useQuery(api.auth.getCurrentUser,!isLoading && isAuthenticated? {}: "skip")
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { useIsMobile } from "@/app/hooks/isMobile";
+export function User({username,email,isAuthenticated,isLoading,selectedTeam}: {username: string | null | undefined,email: string | null | undefined,isAuthenticated: boolean,isLoading: boolean,selectedTeam: string | null}){
+    const isMobile = useIsMobile()
     const onLogout = ()=>{
         authClient.signOut({
             fetchOptions:{
@@ -29,39 +22,55 @@ export function User(){
             }
         });
     }
+    if(!isMobile){
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Avatar>
-                    <AvatarImage src={user? `https://avatar.vercel.sh/${user.email}`: undefined} />
-                    <AvatarFallback>
-                        <User2Icon/>
-                    </AvatarFallback>
-                </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-                <DropdownMenuGroup>
-                    {
-                        !isLoading &&(
-                            isAuthenticated?
-                                <DropdownMenuItem onClick={onLogout} className="text-red-500 font-normal focus:text-red-500">
-                                        Logout
-                                </DropdownMenuItem>
-                                :
-                                <>
-                                    <DropdownMenuItem asChild>
-                                        <Link className="h-full w-full" href='/auth/signin'>Sign in</Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild>
-                                        <Link className="h-full w-full" href='/auth/signup'>Sign up</Link>
-                                    </DropdownMenuItem>
-                                </>
+        <HoverCard openDelay={100} closeDelay={300}>
+            <HoverCardTrigger className="flex gap-2">
+                <Button variant='link'  >
+                    <Avatar className="size-5">
+                        <AvatarImage src={email? `https://avatar.vercel.sh/${email}`: undefined} />
+                        <AvatarFallback>
+                            <User2Icon/>
+                        </AvatarFallback>
+                    </Avatar>
+                    <p>{username}</p>
+                </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-fit p-1">
+            {
+                !isLoading &&(
+                    isAuthenticated?
+                    <Button className="w-full text-destructive" variant="ghost" onClick={onLogout}>Logout</Button>
+                    :
+                    <>
+                    <Button className="w-full" asChild>
+                        <Link href='/auth/signin'>Sign in</Link>
+                    </Button>
+                    <Separator/>
+                    <Button className="w-full" asChild>
+                        <Link href='/auth/signup'>Sign up</Link>
+                    </Button>
+                    </>
+                )
+            }
 
-                        )
-
-                    }
-                </DropdownMenuGroup>
-            </DropdownMenuContent>
-        </DropdownMenu>
+            </HoverCardContent>
+        </HoverCard>
     )
+    }else{
+        return(
+            <div>
+                <div className="flex gap-2">
+                    <Avatar className="size-8">
+                        <AvatarImage src={email? `https://avatar.vercel.sh/${email}`: undefined} />
+                        <AvatarFallback>
+                            <User2Icon/>
+                        </AvatarFallback>
+                    </Avatar>
+                    <h1 className="text-2xl font-bold">{username}</h1>
+                </div>
+                <h2 className="text-lg text-muted-foreground">{selectedTeam}</h2>
+            </div>
+        )
+    }
 }

@@ -11,8 +11,10 @@
 import type * as auth from "../auth.js";
 import type * as document from "../document.js";
 import type * as http from "../http.js";
+import type * as members from "../members.js";
 import type * as notes from "../notes.js";
 import type * as presence from "../presence.js";
+import type * as team from "../team.js";
 
 import type {
   ApiFromModules,
@@ -24,8 +26,10 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   document: typeof document;
   http: typeof http;
+  members: typeof members;
   notes: typeof notes;
   presence: typeof presence;
+  team: typeof team;
 }>;
 
 /**

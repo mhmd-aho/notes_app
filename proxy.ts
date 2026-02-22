@@ -3,7 +3,6 @@ import { getSessionCookie } from "better-auth/cookies";
 
 export async function proxy(request: NextRequest) {
 	const sessionCookie = getSessionCookie(request);
-
     // THIS IS NOT SECURE!
     // This is the recommended approach to optimistically redirect users
     // We recommend handling auth checks in each page/route
@@ -15,5 +14,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/","/create-note","/note"], // Specify the routes the middleware applies to
+	matcher: ["/","/create-note","/note",'/create-team'], // Specify the routes the middleware applies to
 };

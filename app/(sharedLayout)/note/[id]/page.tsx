@@ -48,7 +48,6 @@ export default async function Note({params}: Props) {
         if(typeof note.updatedAt === "number"){
         updateDate = timeAgo(note.updatedAt)
         }
-       
     return (
         <div className="flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-2 p-4">
                 {userId && <Presence noteId={note._id} userId={userId}/>}
@@ -64,7 +63,7 @@ export default async function Note({params}: Props) {
                         <CollaborativeEditor  documentId={note._id}/>
                     </CardContent>
                     <CardFooter className="flex justify-end">
-                        <DeleteButton id={note._id}/>
+                        <DeleteButton id={note._id}>note</DeleteButton>
                     </CardFooter>
                 </Card>
             </div>

@@ -1,11 +1,12 @@
 "use client"
+import { useIsMobile } from "@/app/hooks/isMobile";
 import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 interface SearchNoteResult{
     _id:Id<"notes">,
     title:string,
@@ -14,16 +15,8 @@ interface SearchNoteResult{
 export default function SearchBar(){
     const [searchQuery, setSearchQuery] = useState('')
     const [isOpen,setIsOpen] = useState(false)
-    const [isMobile,setIsMobile] = useState(false)
+    const isMobile = useIsMobile()
     const searchResult = useQuery(api.notes.searchNotes,searchQuery.length > 2 ? {query:searchQuery} : 'skip')
-    useEffect(()=>{
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 1024)
-        }
-        handleResize()
-        window.addEventListener('resize',handleResize)
-        return () => window.removeEventListener('resize',handleResize)
-    },[])
     return(
         <>
         <div className="max-lg:flex max-lg:justify-center max-lg:items-center lg:w-96 w-9 h-9 relative max-lg:mr-1  max-lg:rounded-md  max-lg:border max-lg:bg-background max-lg:shadow-xs dark:max-lg:bg-input/30 dark:max-lg:border-input  ">
@@ -37,7 +30,16 @@ export default function SearchBar(){
                 }} className="size-6 lg:size-7 p-1 rounded-l-sm lg:absolute left-1 top-1">
                     <Search className="w-full h-full" />
                 </button>
-                <Input onChange={(e)=>setSearchQuery(e.target.value)} value={searchQuery} className="h-full w-full pl-10 hidden lg:block" placeholder="Search notes" />
+                <div className="relative h-full w-full hidden lg:block">
+                    <Input onChange={(e)=>setSearchQuery(e.target.value)} value={searchQuery} className="pl-10" placeholder="Search notes" />
+                    {
+                    searchQuery &&
+                    <button className="absolute top-1/2 -translate-1/2 right-0 size-5 hover:scale-105 hover:text-red-400 transition-colors duration-200" onClick={()=>setSearchQuery('')}>
+                        <X className="w-full h-full"/>
+                    </button>
+                    }
+                </div>
+
                 {
                     searchQuery.length > 0 && <SearchResult searchResult={searchResult} setSearchQuery={setSearchQuery}/>
                 }
@@ -45,7 +47,15 @@ export default function SearchBar(){
         {
             isOpen && (
                 <div className="absolute top-12 left-0 h-[calc(100vh-3rem)] w-full bg-background p-2 z-50 flex flex-col gap-2">
-                    <Input onChange={(e)=>setSearchQuery(e.target.value)} value={searchQuery} placeholder="Search notes" />
+                    <div className="relative">
+                        <Input onChange={(e)=>setSearchQuery(e.target.value)} value={searchQuery}  placeholder="Search notes" />
+                        {
+                            searchQuery&&
+                            <button className="absolute top-1/2 -translate-1/2 right-1 size-4 active:scale-95 active:text-red-400 transition-all duration-200" onClick={()=>setSearchQuery('')}>
+                                <X className="w-full h-full"/>
+                            </button>
+                        }
+                     </div>
                     {
                         searchResult === undefined ? (
                             <p className="text-2xl font-bold">Search for notes...</p>

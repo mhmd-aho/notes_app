@@ -1,29 +1,24 @@
 import {
   Table,
-  TableBody,
   TableCaption,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
 import { Plus} from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import Link from "next/link";
-import { Edit } from "lucide-react";
-import { fetchQuery } from "convex/nextjs";
+import { Notes } from "@/components/app/notes";
 import { Button } from "@/components/ui/button";
-import { timeAgo } from "@/lib/time";
+
 export default async function Home() {
-  const notes = await fetchQuery(api.notes.getNotes);
       return (
-        <div className="relative flex flex-col items-center justify-center h-[calc(100vh-3rem)] gap-2 p-4">
-              <Link className="self-start" href="/create-note">
-                <Button variant="default" className="max-lg:w-full">
+        <div className="relative flex flex-col items-center justify-center h-[calc(100vh-3rem)] w-screen gap-2 p-4">
+              <Button className="self-start max-lg:w-full" variant="default" asChild>
+                <Link  href="/create-note">
                     <Plus />
                     Add Note
-                </Button>
-              </Link>
+                </Link>
+              </Button>
           <div className="flex-1 w-full flex justify-center items-start">
             <Table className="lg:w-3/4 w-full mx-auto">
               <TableHeader>
@@ -33,41 +28,11 @@ export default async function Home() {
                   <TableHead className="w-1/5">Last update at</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {
-                      notes && notes.length > 0 ?
-                      notes.map((note) =>{
-                        const date = new Date(note._creationTime).toLocaleDateString('en-US',{
-                          year: "numeric",
-                          month: "numeric",
-                          day: "numeric",
-                        }).replace(/\//g,"-");
-                        const lastUpdate = timeAgo(note.updatedAt);
-                        return(
-                          <TableRow key={note._id}>
-                          <TableCell className="flex items-center gap-2">
-                            <Link className="flex items-center gap-2 hover:text-background hover:bg-foreground p-1 rounded-md transition-all duration-200" href={`/note/${note._id}`}>
-                                <Edit/>
-                            </Link>
-                            {note.title}
-                          </TableCell>
-                          <TableCell>{date}</TableCell>
-                          <TableCell className="size-fit">
-                            {lastUpdate}
-                          </TableCell>
-                        </TableRow>
-                      );
-                      }):
-                      <TableRow>
-                        <TableCell colSpan={3} className="text-center">
-                          <h1 className="text-2xl font-bold">No notes found</h1>
-                        </TableCell>
-                      </TableRow>
-                }
-              </TableBody>
+              <Notes/>
               <TableCaption>List of notes</TableCaption>
             </Table>
           </div>
     </div>
   );
 }
+

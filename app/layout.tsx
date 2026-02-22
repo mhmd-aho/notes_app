@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/app/theme-provider";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { TeamProvider } from "./context/teamContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -44,8 +45,10 @@ export default function RootLayout({
             disableTransitionOnChange
             
           >
+          <TeamProvider>
             {children}
-            <Toaster />
+            <Toaster position="top-center"/>
+          </TeamProvider>
           </ThemeProvider>
         </ConvexClientProvider>
       </body>

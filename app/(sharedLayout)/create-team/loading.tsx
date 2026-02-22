@@ -11,9 +11,8 @@ export default async function Loading(){
                         <CardContent>
                             <div className="flex flex-col lg:gap-4 gap-2">
                                 <Skeleton className="h-12 w-full"/>
-                                <Skeleton className="h-12 w-full"/>
                                 <Skeleton className="max-lg:text-lg text-base lg:h-12 h-10"/>
-                            </div>
+                          </div>
                         </CardContent>
                     </Card>
                 </div>

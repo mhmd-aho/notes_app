@@ -11,24 +11,32 @@ import { createNoteAction } from "@/app/actions";
 import { toast } from "sonner";
 import z from "zod";
 import { useRouter } from "next/navigation";
-import { useConvexAuth } from "convex/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { Spinner } from "@/components/ui/spinner";
+import { api } from "@/convex/_generated/api";
 export default function CreateNote() {
    const {isAuthenticated , isLoading}= useConvexAuth();
    const router = useRouter();
    const [isPending,startTransition] = useTransition();
+    const teams = useQuery(api.team.getUserTeams,!isLoading && isAuthenticated? {}: "skip")
    const form = useForm({
        resolver: zodResolver(NoteSchema),
        defaultValues:{
-           title:'',
+           title:'', 
+           team:''
        }
    });
    
    useEffect(()=>{
        if(!isLoading && !isAuthenticated){
         router.push("/auth/signup")
+        toast.error("You have to be logged in to create a note")
        }
-   },[isLoading, isAuthenticated, router]);
+       if(teams && teams.length === 0){
+        router.push("/create-team")
+        toast.error("You have to join or create a team first")
+       }
+   },[isLoading, isAuthenticated, teams, router]);
    const onSubmit = (data: z.infer<typeof NoteSchema>) => {
        startTransition(async () => {
            try{
@@ -36,9 +44,9 @@ export default function CreateNote() {
                toast.success("Note created successfully")
                router.push("/")
            }
-           catch{
-               toast.error("Failed to create note")
-           }
+            catch(e){
+                toast.error(e instanceof Error ? e.message : "Failed to create note")
+            }
        })
    };
    if (isLoading) {
@@ -76,6 +84,30 @@ export default function CreateNote() {
                                 </div>
                             )}
                             />
+                            <Controller
+                            control={form.control}
+                            name="team"
+
+                            render={({field})=>(
+                                <div className="flex flex-col lg:gap-2 gap-1">
+                                    <Label className="max-lg:text-lg text-base" htmlFor="noteTeam">Team</Label>
+                                    <select className="text-foreground bg-background lg:h-12 h-10 rounded-md" {...field} value={field.value ?? ''} id="noteTeam">
+                                        {
+                                            !teams?
+                                            <option value=''>No team </option>
+                                            :
+                                            <>
+                                            <option value={undefined}>Select a team</option>
+                                            {
+                                                teams.map((team)=>(
+                                                    <option value={team?._id} key={team?._id}>{team?.name}</option>
+                                                ))
+                                            }
+                                            </>
+                                        }
+                                    </select>
+                                </div>                                
+                            )}/>
                             <Button type="submit" disabled={isPending} className="max-lg:text-lg text-base lg:h-12 h-10">{isPending ? <span className="flex items-center gap-1">Adding Note <Spinner className="size-5"/></span>: "Add Note"}</Button>
                         </form>
                         </CardContent>

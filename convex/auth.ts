@@ -6,6 +6,7 @@ import { query } from "./_generated/server";
 import { betterAuth } from "better-auth/minimal";
 import authConfig from "./auth.config";
 import { username } from "better-auth/plugins";
+import { v } from "convex/values";
 
 const siteUrl = process.env.SITE_URL!;
 
@@ -37,6 +38,20 @@ export const getCurrentUser = query({
   handler: async (ctx) => {
     try {
       const user = await authComponent.getAuthUser(ctx);
+      return user;
+    } catch {
+      return null;
+    }
+  },
+});
+
+export const getUserById = query({
+  args: {
+    id: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const user = await authComponent.getAnyUserById(ctx, args.id);
       return user;
     } catch {
       return null;
