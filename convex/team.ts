@@ -1,5 +1,5 @@
 import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { authComponent } from "./auth";
 export const createTeam = mutation({
   args:{
@@ -8,11 +8,11 @@ export const createTeam = mutation({
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
     if(!user){
-      throw new Error('Unauthorized')
+      throw new ConvexError('Unauthorized')
     }
     const team = await ctx.db.query('teams').withIndex('by_name',(q)=>q.eq('name',args.name)).first()
     if(team){
-      throw new Error('Team already exists')
+      throw new ConvexError('Team already exists')
     }
     const newTeam = await ctx.db.insert("teams",{
       name: args.name,
@@ -32,7 +32,23 @@ export const getTeamById = query({
     id: v.id("teams"),
   },
   handler: async (ctx,args)=>{
-    return await ctx.db.get(args.id)
+    const team = await ctx.db.get(args.id)
+    if(!team){
+      throw new ConvexError('Team not found')
+    }
+    const requestsWithUsers = await Promise.all(
+      team.requests.map(async (requestId) => {
+        const requester = await authComponent.getAnyUserById(ctx, requestId);
+        return {
+          id: requestId,
+          name: requester?.username || requester?.name || "Unknown User",
+        };
+      })
+    );
+    return {
+      ...team,
+      requestsDetails: requestsWithUsers,
+    }
   }
 })
 export const getTeamByName = query({
@@ -55,7 +71,7 @@ export const getUserTeams = query({
   handler: async (ctx) => {
     const user = await authComponent.safeGetAuthUser(ctx);
     if (!user) {
-      throw new Error("Unauthorized");
+      throw new ConvexError("Unauthorized");
     }
     const userId = user._id;
     const memberships = await ctx.db.query("members").withIndex("by_user", (q) => q.eq("userId", userId)).collect();
@@ -87,18 +103,18 @@ export const createRequest = mutation({
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
     if(!user){
-      throw new Error('Unauthorized')
+      throw new ConvexError('Unauthorized')
     }
     const team = await ctx.db.query("teams").withIndex('by_name',(q)=>q.eq('name',args.teamName)).first()
     if(!team){
-      throw new Error('Team not found')
+      throw new ConvexError('Team not found')
     }
     const membership = await ctx.db.query("members").withIndex("by_user_team", (q) => q.eq("userId", user._id).eq("teamId", team._id)).first();
     if(membership){
-      throw new Error('You are already a member of this team')
+      throw new ConvexError('You are already a member of this team')
     }
     if(team.requests.includes(user._id)){
-      throw new Error('You have already sent a request to this team')
+      throw new ConvexError('You have already sent a request to this team')
     }
     await ctx.db.patch(team._id,{
       requests: [...team.requests, user._id],
@@ -114,17 +130,17 @@ export const acceptRequest = mutation({
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
     if(!user){
-      throw new Error('Unauthorized')
+      throw new ConvexError('Unauthorized')
     }
     const team = await ctx.db.get(args.teamId)
     if(!team){
-      throw new Error('Team not found')
+      throw new ConvexError('Team not found')
     }
     if(team.ownerId !== user._id){
-      throw new Error('You are not the owner of this team')
+      throw new ConvexError('You are not the owner of this team')
     }
     if(!team.requests.includes(args.userId)){
-      throw new Error('User has not sent a request to this team')
+      throw new ConvexError('User has not sent a request to this team')
     }
     await ctx.db.patch(team._id,{
       requests: team.requests.filter((id)=>id !== args.userId),
@@ -145,17 +161,17 @@ export const rejectRequest = mutation({
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
     if(!user){
-      throw new Error('Unauthorized')
+      throw new ConvexError('Unauthorized')
     }
     const team = await ctx.db.get(args.teamId)
     if(!team){
-      throw new Error('Team not found')
+      throw new ConvexError('Team not found')
     }
     if(team.ownerId !== user._id){
-      throw new Error('You are not the owner of this team')
+      throw new ConvexError('You are not the owner of this team')
     }
     if(!team.requests.includes(args.userId)){
-      throw new Error('User has not sent a request to this team')
+      throw new ConvexError('User has not sent a request to this team')
     }
     await ctx.db.patch(team._id,{
       requests: team.requests.filter((id)=>id !== args.userId),
@@ -170,14 +186,14 @@ export const deleteTeam = mutation({
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
     if(!user){
-      throw new Error('Unauthorized')
+      throw new ConvexError('Unauthorized')
     }
     const team = await ctx.db.get(args.teamId)
     if(!team){
-      throw new Error('Team not found')
+      throw new ConvexError('Team not found')
     }
     if(team.ownerId !== user._id){
-      throw new Error('You are not the owner of this team')
+      throw new ConvexError('You are not the owner of this team')
     }
 
     // Cascade delete members
@@ -205,14 +221,14 @@ export const changeTeamName = mutation({
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
     if(!user){
-      throw new Error('Unauthorized')
+      throw new ConvexError('Unauthorized')
     }
     const team = await ctx.db.get(args.teamId)
     if(!team){
-      throw new Error('Team not found')
+      throw new ConvexError('Team not found')
     }
     if(team.ownerId !== user._id){
-      throw new Error('You are not the owner of this team')
+      throw new ConvexError('You are not the owner of this team')
     }
     await ctx.db.patch(team._id,{
       name: args.name,

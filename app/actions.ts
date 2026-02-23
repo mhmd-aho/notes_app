@@ -7,6 +7,7 @@ import { getToken } from "@/lib/auth-server";
 import { Id } from "@/convex/_generated/dataModel";
 import { revalidatePath } from "next/cache";
 import { TeamSchema } from "./schemas/team";
+import { ConvexError } from "convex/values";
 
 type FormValues = z.infer<typeof NoteSchema>
 type TeamFormValues = z.infer<typeof TeamSchema>
@@ -28,10 +29,11 @@ export async function createNoteAction(data: FormValues){
         }
     }
     catch(e){
-        const message = e instanceof Error ? e.message : 'Failed to create note'
-        return{
-            error: message
+        if (e instanceof ConvexError) {
+            return { error: e.data as string }
         }
+        const message = e instanceof Error ? e.message : 'Failed to create note'
+        return { error: message }
     }
 }
 export async function createTeamAction(data: TeamFormValues){
@@ -49,10 +51,11 @@ export async function createTeamAction(data: TeamFormValues){
             success: 'Team created successfully'
         }
     } catch(e){
-        const message = e instanceof Error ? e.message : 'Failed to create team'
-        return {
-            error: message
+        if (e instanceof ConvexError) {
+            return { error: e.data as string }
         }
+        const message = e instanceof Error ? e.message : 'Failed to create team'
+        return { error: message }
     }
 }
 export async function deleteNoteAction(id: string){
@@ -65,6 +68,9 @@ export async function deleteNoteAction(id: string){
         }
     }
     catch(e){
+        if (e instanceof ConvexError) {
+            return { error: e.data as string }
+        }
         const message = e instanceof Error ? e.message : 'Failed to delete note'
         if(message.includes('You are not the creator')){
             return{
@@ -86,10 +92,11 @@ export async function createRequestAction(teamName: string) {
             success: 'Request created successfully'
         }
     } catch (e) {
-        const message = e instanceof Error ? e.message : 'Failed to join team'
-        return {
-            error: message
+        if (e instanceof ConvexError) {
+            return { error: e.data as string }
         }
+        const message = e instanceof Error ? e.message : 'Failed to join team'
+        return { error: message }
     }
 }
 
@@ -102,10 +109,11 @@ export async function acceptRequestAction(teamId: Id<"teams">, userId: string) {
             success: 'Request accepted successfully'
         }
     } catch (e) {
-        const message = e instanceof Error ? e.message : 'Failed to accept request'
-        return {
-            error: message
+        if (e instanceof ConvexError) {
+            return { error: e.data as string }
         }
+        const message = e instanceof Error ? e.message : 'Failed to accept request'
+        return { error: message }
     }
 }
 
@@ -118,10 +126,11 @@ export async function rejectRequestAction(teamId: Id<"teams">, userId: string) {
             success: 'Request rejected successfully'
         }
     } catch (e) {
-        const message = e instanceof Error ? e.message : 'Failed to reject request'
-        return {
-            error: message
+        if (e instanceof ConvexError) {
+            return { error: e.data as string }
         }
+        const message = e instanceof Error ? e.message : 'Failed to reject request'
+        return { error: message }
     }
 }
 
@@ -134,10 +143,11 @@ export async function deleteTeamAction(teamId: Id<"teams">) {
             success: 'Team deleted successfully'
         }
     } catch (e) {
-        const message = e instanceof Error ? e.message : 'Failed to delete team'
-        return {
-            error: message
+        if (e instanceof ConvexError) {
+            return { error: e.data as string }
         }
+        const message = e instanceof Error ? e.message : 'Failed to delete team'
+        return { error: message }
     }
 }
 export async function deleteMemberAction(memberId: Id<"members">) {
@@ -149,10 +159,11 @@ export async function deleteMemberAction(memberId: Id<"members">) {
             success: 'Member deleted successfully'
         }
     } catch (e) {
-        const message = e instanceof Error ? e.message : 'Failed to delete member'
-        return {
-            error: message
+        if (e instanceof ConvexError) {
+            return { error: e.data as string }
         }
+        const message = e instanceof Error ? e.message : 'Failed to delete member'
+        return { error: message }
     }
 }
 export async function changeTeamNameAction(teamId: Id<"teams">, name: string) {
@@ -164,9 +175,10 @@ export async function changeTeamNameAction(teamId: Id<"teams">, name: string) {
             success: 'Team name changed successfully'
         }
     } catch (e) {
-        const message = e instanceof Error ? e.message : 'Failed to change team name'
-        return {
-            error: message
+        if (e instanceof ConvexError) {
+            return { error: e.data as string }
         }
+        const message = e instanceof Error ? e.message : 'Failed to change team name'
+        return { error: message }
     }
 }

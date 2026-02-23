@@ -11,22 +11,24 @@ import { Doc, Id } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
 import { FunctionReturnType } from "convex/server";
 import { useState, useTransition } from "react";
-import { changeTeamNameAction, deleteMemberAction, deleteNoteAction } from "@/app/actions";
+import { acceptRequestAction, changeTeamNameAction, deleteMemberAction, deleteNoteAction, rejectRequestAction } from "@/app/actions";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTrigger, AlertDialogAction, AlertDialogCancel, AlertDialogDescription, AlertDialogTitle, AlertDialogFooter } from "../ui/alert-dialog";
 import { toast } from "sonner";
 import { Spinner } from "../ui/spinner";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Input } from "../ui/input";
 type MembersData = FunctionReturnType<typeof api.members.getMembersById>;
+type TeamData = FunctionReturnType<typeof api.team.getTeamById>;
 
-
-export function TeamEdit({team, userId, members, notes, ownerName,id}: {team: Doc<'teams'>, userId: string, members: MembersData, notes: Doc<'notes'>[], ownerName: string | undefined | null, id: Id<'teams'>}){
+export function TeamEdit({team, userId, members, notes, ownerName,id}: {team: TeamData, userId: string, members: MembersData, notes: Doc<'notes'>[], ownerName: string | undefined | null, id: Id<'teams'>}){
     const [isEditing, setIsEditing] = useState(false);
     const [editingName, setEditingName] = useState(false);
     const [teamName, setTeamName] = useState(team.name);
     const [isMemberDeletingpPending,startMemberDeleting] = useTransition()
     const [isNameEditingPending,startNameEditing] = useTransition()
     const [isNoteDeletingPending,startNoteDeleting] = useTransition()
+    const [isRequestAcceptingPending,startRequestAccepting] = useTransition()
+    const [isRequestRejectingPending,startRequestRejecting] = useTransition()
     const handleMemberDelete = async (memberId: Id<"members">) => {
         startMemberDeleting(async () => {
             const res = await deleteMemberAction(memberId)
@@ -51,6 +53,26 @@ export function TeamEdit({team, userId, members, notes, ownerName,id}: {team: Do
     const handleNoteDelete = async (noteId: Id<"notes">) => {
         startNoteDeleting(async () => {
             const res = await deleteNoteAction(noteId)
+            if(res.error){
+                toast.error(res.error)
+            }else{
+                toast.success(res.success)
+            }
+        })
+    }
+    const handleRequestAccept = async (requestId:string) => {
+        startRequestAccepting(async () => {
+            const res = await acceptRequestAction(id, requestId)
+            if(res.error){
+                toast.error(res.error)
+            }else{
+                toast.success(res.success)
+            }
+        })
+    }
+    const handleRequestReject = async (requestId:string) => {
+        startRequestRejecting(async () => {
+            const res = await rejectRequestAction(id, requestId)
             if(res.error){
                 toast.error(res.error)
             }else{
@@ -88,7 +110,17 @@ export function TeamEdit({team, userId, members, notes, ownerName,id}: {team: Do
                                                 <p className="bg-accent text-[12px] py-1 px-2 rounded-full w-fit">Requests: {team.requests.length} pending</p>
                                             </PopoverTrigger>
                                             <PopoverContent>
-                                                <p>Requests: {team.requests.length} pending</p>
+                                                {
+                                                    team.requestsDetails.map((request) => (
+                                                        <div key={request.id} className="flex items-center justify-between">
+                                                            <p>{request.name}</p>
+                                                            <div className="flex gap-1">
+                                                                <Button disabled={isRequestAcceptingPending} onClick={() => {handleRequestAccept(request.id)}} size="sm">{isRequestAcceptingPending ? <Spinner/> : 'Accept'}</Button>
+                                                                <Button disabled={isRequestRejectingPending} onClick={() => {handleRequestReject(request.id)}} size="sm">{isRequestRejectingPending ? <Spinner/> : 'Reject'}</Button>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                }
                                             </PopoverContent>
                                         </Popover>
                                     )
@@ -108,7 +140,7 @@ export function TeamEdit({team, userId, members, notes, ownerName,id}: {team: Do
                                                     <User2Icon/>
                                                 </AvatarFallback>
                                             </Avatar>
-                                            {isEditing && (
+                                            {isEditing && member.userId !== team.ownerId && (
                                                 <AlertDialog>
                                                     <AlertDialogTrigger disabled={isMemberDeletingpPending} className="absolute -top-1 -right-1 bg-card rounded-full p-0.5 ">
                                                         {isMemberDeletingpPending ? <Spinner className="size-4"/> : <X className="size-4 text-destructive"/>}

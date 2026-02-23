@@ -1,5 +1,5 @@
 import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { authComponent } from "./auth";
 import { Doc, Id } from "./_generated/dataModel";
 
@@ -25,7 +25,7 @@ export const createNote = mutation({
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
     if(!user){
-      throw new Error('Unauthorized')
+      throw new ConvexError('Unauthorized')
     }
     const newNote = await ctx.db.insert("notes",{
       title: args.title,
@@ -49,17 +49,17 @@ export const deleteNote = mutation({
   handler: async (ctx,args)=>{
     const user = await authComponent.safeGetAuthUser(ctx)
     if(!user){
-      throw new Error('Unauthorized')
+      throw new ConvexError('Unauthorized')
     }
     const note = await ctx.db.get(args.id)
     if(!note){
-      throw new Error('Note not found')
+      throw new ConvexError('Note not found')
     }
     const team = await ctx.db.get(note.team)
     if (note.author === user.name || team?.ownerId === user._id) {
       await ctx.db.delete(args.id)
     }else{
-      throw new Error('You are not the creator of this note or owner of the team to delete it')
+      throw new ConvexError('You are not the creator of this note or owner of the team to delete it')
     }
   }
 })
