@@ -8,14 +8,12 @@ import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { SignInSchema } from "@/app/schemas/user"
 import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import z from "zod"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 export default function SignIn() {
     const [isPending, startTransition] = useTransition();
-    const router = useRouter();
     const form = useForm({
         resolver: zodResolver(SignInSchema),
         defaultValues: {
@@ -34,7 +32,7 @@ export default function SignIn() {
                     fetchOptions:{
                         onSuccess:()=>{
                             toast.success("Sign in successful")
-                            router.push("/")
+                            window.location.href = "/"
                         },
                         onError:(error)=>{
                             toast.error(error.error.message)
@@ -48,7 +46,6 @@ export default function SignIn() {
                     fetchOptions:{
                         onSuccess:()=>{
                             toast.success("Sign in successful")
-                            router.push("/")
                         },
                         onError:(error)=>{
                             toast.error(error.error.message)

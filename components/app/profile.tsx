@@ -41,6 +41,7 @@ export default function Profile(){
                                     }
                                 }
                             }, [selectedTeamId, teams, isLoading, setSelectedTeamId])
+        if(isMobile === null) return null
         if(!isMobile){
             if (isLoading){
                 return(

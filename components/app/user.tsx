@@ -1,5 +1,5 @@
 "use client"
-import { User2Icon } from "lucide-react"
+import { LogOut, User2Icon } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
@@ -60,14 +60,17 @@ export function User({username,email,isAuthenticated,isLoading,selectedTeam}: {u
     }else{
         return(
             <div>
-                <div className="flex gap-2">
-                    <Avatar className="size-8">
-                        <AvatarImage src={email? `https://avatar.vercel.sh/${email}`: undefined} />
-                        <AvatarFallback>
-                            <User2Icon/>
-                        </AvatarFallback>
-                    </Avatar>
-                    <h1 className="text-2xl font-bold">{username}</h1>
+                <div className="flex justify-between">
+                    <div className="flex gap-2">
+                        <Avatar className="size-8">
+                            <AvatarImage src={email? `https://avatar.vercel.sh/${email}`: undefined} />
+                            <AvatarFallback>
+                                <User2Icon/>
+                            </AvatarFallback>
+                        </Avatar>
+                        <h1 className="text-2xl font-bold">{username}</h1>
+                    </div>
+                    <LogOut onClick={onLogout} className="size-6 text-destructive active:text-foreground"/>
                 </div>
                 <h2 className="text-lg text-muted-foreground">{selectedTeam}</h2>
             </div>

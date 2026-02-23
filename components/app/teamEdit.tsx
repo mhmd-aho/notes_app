@@ -29,47 +29,32 @@ export function TeamEdit({team, userId, members, notes, ownerName,id}: {team: Do
     const [isNoteDeletingPending,startNoteDeleting] = useTransition()
     const handleMemberDelete = async (memberId: Id<"members">) => {
         startMemberDeleting(async () => {
-            try{
-                const res = await deleteMemberAction(memberId)
-                if(res.error){
-                    toast.error(res.error)
-                }else{
-                    toast.success(res.success)
-                }
-            }catch(e){
-                const message = e instanceof Error ? e.message : 'Failed to delete member'
-                toast.error(message)
+            const res = await deleteMemberAction(memberId)
+            if(res.error){
+                toast.error(res.error)
+            }else{
+                toast.success(res.success)
             }
         })
     }
     const handleChangeName = async () => {
         startNameEditing(async () => {
-            try{
-                const res = await changeTeamNameAction(id, teamName)
-                if(res.error){
-                    toast.error(res.error)
-                }else{
-                    toast.success(res.success)
-                    setEditingName(false)
-                }
-            }catch(e){
-                const message = e instanceof Error ? e.message : 'Failed to change team name'
-                toast.error(message)
+            const res = await changeTeamNameAction(id, teamName)
+            if(res.error){
+                toast.error(res.error)
+            }else{
+                toast.success(res.success)
+                setEditingName(false)
             }
         })
     }
     const handleNoteDelete = async (noteId: Id<"notes">) => {
         startNoteDeleting(async () => {
-            try{
-                const res = await deleteNoteAction(noteId)
-                if(res.error){
-                    toast.error(res.error)
-                }else{
-                    toast.success(res.success)
-                }
-            }catch(e){
-                const message = e instanceof Error ? e.message : 'Failed to delete note'
-                toast.error(message)
+            const res = await deleteNoteAction(noteId)
+            if(res.error){
+                toast.error(res.error)
+            }else{
+                toast.success(res.success)
             }
         })
     }

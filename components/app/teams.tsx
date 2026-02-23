@@ -30,34 +30,34 @@ export function Teams({teams,userId,selectedTeam,setPopoverOpen}: {teams: TeamWi
             const handleCreateRequest = () => {
                 createStartTransition(async () => {
                     if (!teamName.trim()) return;
-                    try {
-                        await createRequestAction(teamName);
+                    const result = await createRequestAction(teamName);
+                    if(result.error){
+                        toast.error(result.error)
+                    }else{
                         setTeamName("");
                         toast.success("Request sent successfully");
-                    } catch (e) {
-                        toast.error(e instanceof Error ? e.message : "Failed to send request");
                     }
                 });
             };
             const handleAcceptRequest = async (teamId: Id<"teams"> | undefined, userId: string) => {
                 if (!teamId) return;
                 acceptStartTransition(async () => {
-                    try {
-                        await acceptRequestAction(teamId, userId)
+                    const result = await acceptRequestAction(teamId, userId)
+                    if(result.error){
+                        toast.error(result.error)
+                    }else{
                         toast.success("Request accepted successfully")
-                    } catch (e) {
-                        toast.error(e instanceof Error ? e.message : "Failed to accept request")
                     }
                 })
             }
             const handleRejectRequest = async (teamId: Id<"teams"> | undefined, userId: string) => {
                 if (!teamId) return;
                 rejectStartTransition(async () => {
-                    try {
-                        await rejectRequestAction(teamId, userId)
+                    const result = await rejectRequestAction(teamId, userId)
+                    if(result.error){
+                        toast.error(result.error)
+                    }else{
                         toast.success("Request rejected successfully")
-                    } catch (e) {
-                        toast.error(e instanceof Error ? e.message : "Failed to reject request")
                     }
                 })
             }
@@ -79,7 +79,7 @@ export function Teams({teams,userId,selectedTeam,setPopoverOpen}: {teams: TeamWi
                                             ) : (
                                                 (teams as TeamWithDetails[]).map((team) => (
                                                     team !== null && team !== undefined && (
-                                                        team.ownerId === userId ?
+                                                    team.ownerId === userId ?
                                                     <div key={team._id} className="flex items-center justify-between group">
                                                         <HoverCard>
                                                             <Link href={`/team/${team._id}`}>
@@ -188,8 +188,8 @@ export function Teams({teams,userId,selectedTeam,setPopoverOpen}: {teams: TeamWi
                                                     </div>
                                                                     :
                                                                     <div key={team._id} className="flex items-center gap-2 group">
-                                                                        <Link href={`/team/${team._id}`}>
-                                                                            <Settings className="size-4 hidden group-hover:block text-muted-foreground hover:text-foreground transition-all duration-200"/>
+                                                                        <Link onClick={() => setPopoverOpen(false)} href={`/team/${team._id}`}>
+                                                                            <Settings className="size-4 active:text-muted-foreground"/>
                                                                         </Link>
                                                                         <p>{team.name}</p>
                                                                     </div>
